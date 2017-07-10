@@ -1,28 +1,3 @@
-// Maps one url to an array of corresponding urls. 
-// The content of all/majority of these urls should match that of the original url.
-var urls = {
-    "http://34.211.84.202:8080/jquery-2.2.4.min.js": [
-        "http://34.211.84.202:8080/jquery-2.2.4.min.js", 
-        "http://54.71.194.41:8080/jquery-2.2.4.min.js", 
-        "http://52.38.97.177:8080/jquery-2.2.4.min.js"
-    ]
-};
-
-/**
- * Get the current URL.
- * @param {function(string)} callback - called when the URL of the current tab is found.
- */
-function getCurrentTabUrl(callback) {
-  var queryInfo = { // Get the active tab in the active window.
-    active: true,
-    currentWindow: true
-  };
-
-  chrome.tabs.query(queryInfo, function(tabs) { // tabs: array of tabs that match the query.
-    callback(tabs[0].url); // Exactly one tab is active in any window.
-  });
-}
-
 /**
  * Get the content of the given urls.
  * @param {array} urls - an array of urls.
@@ -76,7 +51,7 @@ function computeFrequencies(urls, results) {
  * @return {string} - the HTML for the results table.
  */
 function constructHTML(frequencies) {
-  var html = "<tr><th>Source URLs</th><th>Votes</th></tr>";
+  var html = "<table><tr><th>Source URLs</th><th>Votes</th></tr>";
   for(var key in frequencies) {
     if(!frequencies.hasOwnProperty(key)) continue;
     
@@ -84,16 +59,7 @@ function constructHTML(frequencies) {
     html += "<tr><td>"+obj.urls.join("<br>")+"</td>";
     html += "<td>"+obj.frequency+"</td></tr>";
   }
-  return html;
-}
-
-/**
- * Show the status message and empty the result table.
- * @param {string} statusText - the text to be displayed in the HTML.
- */
-function renderStatus(statusText) {
-  document.getElementById("status").textContent = statusText;
-  document.getElementById("result-table").innerHTML = "";
+  return html + "</table>";
 }
 
 /*
@@ -105,30 +71,33 @@ function renderStatus(statusText) {
  *    c. Check for consensus and display the frequencies in a table.
  */
 document.addEventListener('DOMContentLoaded', function() {
-  getCurrentTabUrl(function(url) {
-    // Check if the current url is supported.
-    if(urls[url] == null) {
-      renderStatus("Not Applicable");
-      return;
-    }
+  // Read the parameters (urls of the cdns) from the current url.
+  var current_url = location.href;
+  var passed_parameters = current_url.substring(chrome.extension.getURL("consensus.html").length+1);
+  var urls = JSON.parse(decodeURIComponent(passed_parameters));
+  
+  // Check if the current url is supported.
+  if(urls == null || typeof urls != "object" || urls.length <= 0) {
+    document.write("<h1>Not Applicable</h1>");
+    return;
+  }
+  
+  // Get the content of all urls corresponding to the currently open url.
+  var promises = getContents(urls);
+  
+  Promise.all(promises).then(function(results) {
+    // Compute the frequencies and display the result.
+    var frequencies = computeFrequencies(urls, results);
+    var consensusReached = frequencies[results[0]].frequency == results.length;
+    var htmlResultTable = constructHTML(frequencies);
     
-    // Get the content of all urls corresponding to the currently open url.
-    renderStatus('Checking for consensus');
-    var promises = getContents(urls[url]);
+    // Display results in a popup window.
+    var win = window.open("", "Results", "toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=yes, resizable=yes, width=800, height=400");
+    win.document.open('text/html');
+    win.document.write(consensusReached ? '<h1>Consensus Reached!</h1>' : '<h1>No Consensus</h1>');
+    win.document.write(htmlResultTable);
+    win.document.close();
     
-    Promise.all(promises).then(function(results) {
-      // Compute the frequencies and display the result.
-      var frequencies = computeFrequencies(urls[url], results);
-      var consensusReached = frequencies[results[0]].frequency == results.length;
-      var htmlResultTable = constructHTML(frequencies);
-      
-      if(consensusReached) {    
-        renderStatus('Consensus Reached!');
-        document.getElementById("result-table").innerHTML = htmlResultTable;
-      } else {
-        renderStatus('Results ready');
-        document.getElementById("result-table").innerHTML = htmlResultTable;
-      }
-    });//.catch(renderStatus);
-  });
+    if(consensusReached) { document.open('text/html'); document.write(results[0]); document.close(); }
+  }).catch(document.write);
 });
