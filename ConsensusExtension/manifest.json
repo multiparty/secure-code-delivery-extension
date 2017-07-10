@@ -1,0 +1,21 @@
+{
+  "manifest_version": 2,
+
+  "name": "Federated Consensus-based Code Delivery",
+  "description": "Only allow code to run if all the cdns reached consensus on what version of the code to run.",
+  "version": "1.0",
+  
+  "web_accessible_resources": [
+    "consensus.html",
+    "consensus-script.js",
+    "mpc.html",
+    "mpc-script.js"
+  ],
+
+  
+  "permissions": [
+    "activeTab",
+    "https://ajax.googleapis.com/",
+    "<all_urls>"
+  ]
+}
