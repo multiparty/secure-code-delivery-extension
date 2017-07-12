@@ -5,6 +5,8 @@
   "description": "Only allow code to run if all the cdns reached consensus on what version of the code to run.",
   "version": "1.0",
   
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  
   "web_accessible_resources": [
     "consensus.html",
     "consensus-script.js",

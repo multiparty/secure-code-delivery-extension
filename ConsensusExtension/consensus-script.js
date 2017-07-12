@@ -98,6 +98,16 @@ document.addEventListener('DOMContentLoaded', function() {
     win.document.write(htmlResultTable);
     win.document.close();
     
-    if(consensusReached) { document.open('text/html'); document.write(results[0]); document.close(); }
+    if(consensusReached) {
+      var mainElement = document.createElement("html");
+      mainElement.innerHTML = results[0];
+            
+      var html = document.getElementsByTagName("html")[0];
+      html.removeChild(html.children[1]);
+      html.removeChild(html.children[0]);
+      
+      for(var i = 0; i < mainElement.children.length; /* no increment, array becomes smaller */)
+        html.append(mainElement.children[0]);
+    }
   }).catch(document.write);
 });
