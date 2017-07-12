@@ -1,8 +1,7 @@
 {
   "manifest_version": 2,
 
-  "name": "Federated Consensus-based Code Delivery",
-  "description": "Only allow code to run if all the cdns reached consensus on what version of the code to run.",
+  "name": "Federated Code Delivery",
   "version": "1.0",
   
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
