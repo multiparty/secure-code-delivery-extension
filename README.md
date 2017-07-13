@@ -1,16 +1,37 @@
-[Basic Tutorial For Chrome Extension Development](https://developer.chrome.com/extensions/getstarted)
+# Federated Code Delivery
+Requires Google Chrome version 45 and higher.
 
-## To load the extension (taken from the above tutorial):
-* Visit chrome://extensions in your browser (or open up the Chrome menu by clicking the icon to the far right of the Omnibox:  The menu's icon is three horizontal bars. and select Extensions under the Tools menu to get to the same place).
+## Setup
+* download the source code.
+* Visit chrome://extensions in your Chrome browser.
 * Ensure that the Developer mode checkbox in the top right-hand corner is checked.
-* Click Load unpacked extension… to pop up a file-selection dialog
-* Navigate to the directory in which your extension files live, and select it.
-* The extension will be loaded. You will see the extension id under its name.
+* Click "Load unpacked extension" to pop up a file-selection dialog
+* Navigate to the <source_code_directory> and choose the "Extension" directory.
+* The extension will be loaded. You should see the icon with a big "F" letter in the top-right corner of Chrome (in the toolbar).
 
-## To test the extension with some sample urls:
-* Testing consensus with all cdns giving correct results open:
-    chrome-extension://<extension_id>/consensus.html?["http://34.211.84.202:8080/good.html","http://54.71.194.41:8080/good.html","http://52.38.97.177:8080/good.html"]
-* Testing consensus with some cdns giving incorrect results open:
-    chrome-extension://<extension_id>/consensus.html?["http://34.211.84.202:8080/good.html","http://54.71.194.41:8080/good.html","http://52.38.97.177:8080/bad.html"]
-* Testing shamir secret sharing on code piece:
-    chrome-extension://<extension_id>/mpc.html?["http://34.211.84.202:8080/good1.html","http://54.71.194.41:8080/good2.html","http://52.38.97.177:8080/good3.html"]
+## Testing
+* Choose one of the two scenarios below and copy its the url. 
+* Click on the "F" icon in the top-right corner of Chrome.
+* Paste the url inside the popup panel, then click Fetch.
+
+### Majority satisfied:
+    http://34.211.84.202:8080/good.html?federated_plugin=["http://54.71.194.41:8080/badhash.html","http://52.38.97.177:8080/goodhash.html"]
+    
+### Majority not satisfied:
+    http://34.211.84.202:8080/good.html?federated_plugin=["http://54.71.194.41:8080/goodhash.html","http://52.38.97.177:8080/goodhash.html"
+    
+## Custom Threshold
+By default, the extension checks for a majority (more than half).  You can change the threshold by providing it in the url as follows:
+
+    http://.../...?federated_plugin={"threshold":<threshold_number>,"urls":["url1","url2",...]}
+
+## Supporting your own custom webpage
+To allow the extension to federate the code delivery process for your webpage, you need 3 simple steps:
+* Host your webpage at some url.
+* Provide other urls that serve a SHA-256 hash of your code.
+* Pick a threshold and construct a url according to the extension's format:
+
+    http://your/page/url?federated_plugin={"threshold":your_threshold,"urls":["url_hash_1","url_hash2",...]}
+
+## License
+MIT
