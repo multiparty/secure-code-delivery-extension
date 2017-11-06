@@ -15,10 +15,10 @@ Requires Google Chrome version 45 and higher.
 * Paste the url inside the popup panel, then click Fetch.
 
 ### Majority satisfied:
-    http://34.211.84.202:8080/good.html?federated_plugin=["http://54.71.194.41:8080/badhash.html","http://52.38.97.177:8080/goodhash.html"]
+    http://34.211.84.202:8080/good.html?federated_plugin=["http://54.71.194.41:8080/goodhash.html","http://52.38.97.177:8080/goodhash.html"]
     
 ### Majority not satisfied:
-    http://34.211.84.202:8080/good.html?federated_plugin=["http://54.71.194.41:8080/goodhash.html","http://52.38.97.177:8080/goodhash.html"
+    http://34.211.84.202:8080/good.html?federated_plugin=["http://54.71.194.41:8080/badhash.html","http://52.38.97.177:8080/goodhash.html"]
     
 ## Custom Threshold
 By default, the extension checks for a majority (more than half).  You can change the threshold by providing it in the url as follows:
