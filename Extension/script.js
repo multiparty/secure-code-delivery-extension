@@ -163,12 +163,12 @@ function start() {
       var frequency = frequencies[codeHash] ? frequencies[codeHash].frequency : 0;
       var htmlResultTable = constructHTML(frequencies, codeHash);
       
-      popupTables(frequency >= threshold, htmlResultTable);
       if(frequency >= threshold) {
         chrome.tabs.getSelected(null, function(tab) {
           chrome.tabs.executeScript(tab.id, {code:" document.open(\"text/html\"); document.write(`"+code+"`); document.close();"});
         });
       }
+      popupTables(frequency >= threshold, htmlResultTable);
     }).catch(document.write);
   }).catch(document.write);
 };
